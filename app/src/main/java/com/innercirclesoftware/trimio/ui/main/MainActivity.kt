@@ -3,6 +3,8 @@ package com.innercirclesoftware.trimio.ui.main
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.innercirclesoftware.trimio.R
 import com.innercirclesoftware.trimio.ui.base.BaseActivity
 import javax.inject.Inject
@@ -10,11 +12,13 @@ import javax.inject.Inject
 class MainActivity : BaseActivity() {
 
     @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
     lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
         viewModel.getTrimStatus().observe(this, Observer {
             when (it) {
                 is TrimStatus.Trimming -> Toast.makeText(this, "Trimming ${it.current}", Toast.LENGTH_LONG).show()

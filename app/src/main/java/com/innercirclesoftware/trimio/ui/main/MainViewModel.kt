@@ -3,12 +3,14 @@ package com.innercirclesoftware.trimio.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.innercirclesoftware.trimio.trim.Partition
+import com.innercirclesoftware.trimio.trim.Trimmer
 import com.innercirclesoftware.trimio.ui.base.BaseViewModel
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class MainViewModel : BaseViewModel() {
+class MainViewModel @Inject constructor(trimmer: Trimmer) : BaseViewModel() {
 
     private var trimState = MutableLiveData<TrimStatus>()
 
