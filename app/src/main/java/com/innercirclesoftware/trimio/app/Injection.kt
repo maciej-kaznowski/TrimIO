@@ -1,5 +1,6 @@
 package com.innercirclesoftware.trimio.app
 
+import com.innercirclesoftware.trimio.ui.base.ActivityComponent
 import dagger.Component
 import dagger.Module
 import javax.inject.Scope
@@ -15,6 +16,8 @@ annotation class PerApp
     ]
 )
 interface AppComponent {
+
+    abstract fun newActivityComponent(): ActivityComponent.Builder
 
     fun inject(app: App)
 
