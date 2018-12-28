@@ -54,4 +54,9 @@ dependencies {
 
     //libsuperuser
     implementation 'eu.chainfire:libsuperuser:1.0.0.+'
+
+    //butterknife
+    def butterknife = '9.0.0-rc3'
+    implementation "com.jakewharton:butterknife:$butterknife"
+    kapt "com.jakewharton:butterknife-compiler:$butterknife"
 }

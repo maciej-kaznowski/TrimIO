@@ -5,6 +5,7 @@ import android.content.res.AssetManager
 import com.github.ajalt.timberkt.Timber
 import eu.chainfire.libsuperuser.Shell
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import java.io.File
@@ -17,7 +18,7 @@ import javax.inject.Inject
 interface Trimmer {
 
     //TODO convert to Observable<Progress>
-    fun trim(partition: Partition): Completable
+    fun trim(vararg partitions: Partition): Completable
 
     fun trimAll(): Completable {
         val trimCache = trim(Partition.Cache)
@@ -68,15 +69,19 @@ internal class TrimmerImpl @Inject constructor(private val assetManager: AssetMa
         }
     }
 
-    override fun trim(partition: Partition): Completable {
-        val trim = Single.just("$fstrimPath -v ${partition.directory}")
+    override fun trim(vararg partitions: Partition): Completable {
+        val trim = Observable.fromArray(*partitions).flatMapCompletable { trim(it) }
+
+        return createFstrimFile.andThen(trim)
+    }
+
+    private fun trim(partition: Partition): Completable {
+        return Single.just("$fstrimPath -v ${partition.directory}")
             .subscribeOn(Schedulers.io()) //TODO determine which Thread to use
             .doOnSuccess { Timber.v { "Executing \"$it\"" } }
             .map { exec(it) }
             .doOnSuccess { Timber.v { "Finished. Result=\"$it\"" } }
             .ignoreElement()
-
-        return createFstrimFile.andThen(trim)
     }
 
     private fun exec(cmd: String): List<String> {

@@ -2,6 +2,7 @@ package com.innercirclesoftware.trimio.ui.base
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import butterknife.ButterKnife
 import com.innercirclesoftware.trimio.app.App
 import com.innercirclesoftware.trimio.app.AppComponent
 
@@ -13,6 +14,8 @@ abstract class BaseActivity : AppCompatActivity() {
     private val appComponent: AppComponent
         get() = app.component
 
+    abstract val layout: Int
+
     val activityComponent: ActivityComponent by lazy {
         appComponent
             .newActivityComponent()
@@ -22,6 +25,8 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(layout)
+        ButterKnife.bind(this)
         inject()
     }
 
