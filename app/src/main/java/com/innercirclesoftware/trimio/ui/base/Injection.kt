@@ -1,5 +1,7 @@
 package com.innercirclesoftware.trimio.ui.base
 
+import android.content.Context
+import android.content.res.AssetManager
 import dagger.Module
 import dagger.Subcomponent
 import javax.inject.Scope
@@ -18,6 +20,10 @@ class ActivityModule(activity: BaseActivity)
     ]
 )
 interface ActivityComponent {
+
+    fun getContext(): Context
+
+    fun getAssetManager(): AssetManager
 
     @Subcomponent.Builder
     interface Builder {

@@ -1,8 +1,11 @@
 package com.innercirclesoftware.trimio.app
 
+import android.content.Context
+import android.content.res.AssetManager
 import com.innercirclesoftware.trimio.ui.base.ActivityComponent
 import dagger.Component
 import dagger.Module
+import dagger.Provides
 import javax.inject.Scope
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -17,11 +20,28 @@ annotation class PerApp
 )
 interface AppComponent {
 
-    abstract fun newActivityComponent(): ActivityComponent.Builder
+    fun newActivityComponent(): ActivityComponent.Builder
 
     fun inject(app: App)
+
+    fun getContext(): Context
+
+    fun getAssetManager(): AssetManager
 
 }
 
 @Module
-class AppModule(val app: App)
+class AppModule(private val app: App) {
+
+    @Provides
+    @PerApp
+    fun providesAppContext(): Context {
+        return app
+    }
+
+    @Provides
+    @PerApp
+    fun providesAssetManager(): AssetManager {
+        return app.assets
+    }
+}

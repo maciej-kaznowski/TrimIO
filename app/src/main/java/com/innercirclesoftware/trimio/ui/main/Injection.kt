@@ -1,6 +1,7 @@
 package com.innercirclesoftware.trimio.ui.main
 
 import androidx.lifecycle.ViewModelProviders
+import com.innercirclesoftware.trimio.trim.TrimModule
 import com.innercirclesoftware.trimio.ui.base.ActivityComponent
 import dagger.Component
 import dagger.Module
@@ -14,7 +15,10 @@ annotation class PerMainActivity
 @PerMainActivity
 @Component(
     dependencies = [ActivityComponent::class],
-    modules = [MainActivityModule::class]
+    modules = [
+        TrimModule::class,
+        MainActivityModule::class
+    ]
 )
 interface MainActivityComponent {
 
