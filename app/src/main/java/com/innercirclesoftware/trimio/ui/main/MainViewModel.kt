@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.github.ajalt.timberkt.Timber
 import com.innercirclesoftware.trimio.trim.Partition
+import com.innercirclesoftware.trimio.trim.TrimResult
 import com.innercirclesoftware.trimio.trim.Trimmer
 import com.innercirclesoftware.trimio.ui.base.BaseViewModel
+import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.atomic.AtomicInteger
@@ -13,41 +15,78 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(trimmer: Trimmer) : BaseViewModel() {
 
-    private var trimState = MutableLiveData<TrimStatus>()
+    private val _cacheState = MutableLiveData<TrimStatus>()
+    val cacheState: LiveData<TrimStatus>
+        get() = _cacheState
+
+    private val _dataState = MutableLiveData<TrimStatus>()
+    val dataState: LiveData<TrimStatus>
+        get() = _dataState
+
+    private val _systemState = MutableLiveData<TrimStatus>()
+    val systemState: LiveData<TrimStatus>
+        get() = _systemState
+
+    private val _trimming = MutableLiveData<Boolean>()
+    private val activeTrimCounter = AtomicInteger()
+    val trimming: LiveData<Boolean>
+        get() = _trimming
+
+
     private val trimQueue = PublishSubject.create<TrimRequest>()
-    private val trimProgress = AtomicInteger()
 
     init {
-        trimState.value = TrimStatus.Sleeping
+        _cacheState.value = TrimStatus.Sleeping
+        _dataState.value = TrimStatus.Sleeping
+        _systemState.value = TrimStatus.Sleeping
+        _trimming.value = false
 
         trimQueue.observeOn(Schedulers.io())
-            .map { it.partitions }
-            .map { it.toTypedArray() }
             .doOnNext { Timber.i { "Received TrimRequest=$it" } }
-            .doOnNext {
-                val trimCounter = trimProgress.incrementAndGet()
-                Timber.v { "Trim counter is at $trimCounter" }
-            }
-            .concatMap {
-                trimState.postValue(TrimStatus.Trimming(it.toList(), it.first()))
-                trimmer.trim(*it)
-                    .doOnComplete{onTrimComplete(it)}
-                    .toObservable<Any>()
+            .concatMap { request ->
+                Observable.fromIterable(request.partitions)
+                    .doOnSubscribe { onTrimStarted(request) }
+                    .flatMap { partition ->
+                        trimmer.trim(partition)
+                            .doOnSubscribe { onStartedTrimmingPartition(partition) }
+                            .doOnSuccess { onFinishedTrimmingPartition(it) }
+                            .toObservable()
+                    }
+                    .toList()
+                    .doOnSuccess { onTrimFinished(request, it) }
+                    .toObservable()
             }
             .subscribe()
             .disposeOnCleared()
     }
 
-    private fun onTrimComplete(partitions: Array<Partition>) {
-        val trimCounter = trimProgress.decrementAndGet()
-        Timber.v { "Trim counter is at $trimCounter" }
+    private fun onTrimStarted(request: TrimRequest) {
+        _cacheState.postValue(if (request.trimCache) TrimStatus.Trimming else TrimStatus.Sleeping)
+        _dataState.postValue(if (request.trimData) TrimStatus.Trimming else TrimStatus.Sleeping)
+        _systemState.postValue(if (request.trimSystem) TrimStatus.Trimming else TrimStatus.Sleeping)
+        _trimming.postValue(activeTrimCounter.incrementAndGet() > 0)
+    }
 
-        if (trimCounter == 0) {
-            trimState.postValue(TrimStatus.Sleeping)
+    private fun onStartedTrimmingPartition(partition: Partition) {
+        getState(partition).postValue(TrimStatus.Trimming)
+    }
+
+    private fun onFinishedTrimmingPartition(result: TrimResult) {
+        getState(result.partition).postValue(TrimStatus.Completed(result))
+    }
+
+    private fun onTrimFinished(request: TrimRequest, results: List<TrimResult>) {
+        _trimming.postValue(activeTrimCounter.decrementAndGet() == 0)
+    }
+
+    private fun getState(partition: Partition): MutableLiveData<TrimStatus> {
+        return when (partition) {
+            is Partition.Cache -> _cacheState
+            is Partition.Data -> _dataState
+            is Partition.System -> _systemState
         }
     }
 
-    fun getTrimStatus(): LiveData<TrimStatus> = trimState
     fun trim(request: TrimRequest) = trimQueue.onNext(request)
 
 }
@@ -55,7 +94,8 @@ class MainViewModel @Inject constructor(trimmer: Trimmer) : BaseViewModel() {
 sealed class TrimStatus {
 
     object Sleeping : TrimStatus()
-    class Trimming(val partitions: List<Partition>, val current: Partition) : TrimStatus()
+    object Trimming : TrimStatus()
+    class Completed(val result: TrimResult) : TrimStatus()
 
 }
 

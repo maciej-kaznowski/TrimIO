@@ -5,7 +5,6 @@ import android.content.res.AssetManager
 import com.github.ajalt.timberkt.Timber
 import eu.chainfire.libsuperuser.Shell
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import java.io.File
@@ -17,16 +16,15 @@ import javax.inject.Inject
 
 interface Trimmer {
 
-    //TODO convert to Observable<Progress>
-    fun trim(vararg partitions: Partition): Completable
+    fun trim(partition: Partition): Single<TrimResult>
 
-    fun trimAll(): Completable {
-        val trimCache = trim(Partition.Cache)
-        val trimData = trim(Partition.Data)
-        val trimSystem = trim(Partition.System)
+}
 
-        return Completable.concat(listOf(trimCache, trimData, trimSystem))
-    }
+sealed class TrimResult(val partition: Partition) {
+
+    class Success(partition: Partition, val trimmedBytes: Long) : TrimResult(partition)
+    class Failure(partition: Partition, val throwable: Throwable) : TrimResult(partition)
+
 }
 
 internal class TrimmerImpl @Inject constructor(private val assetManager: AssetManager, val context: Context) : Trimmer {
@@ -69,19 +67,33 @@ internal class TrimmerImpl @Inject constructor(private val assetManager: AssetMa
         }
     }
 
-    override fun trim(vararg partitions: Partition): Completable {
-        val trim = Observable.fromArray(*partitions).flatMapCompletable { trim(it) }
+    override fun trim(partition: Partition): Single<TrimResult> {
+        val trim = Single.just("$fstrimPath -v ${partition.directory}")
+            .subscribeOn(Schedulers.io()) //TODO determine which Thread to use
+            .doOnSuccess { Timber.v { "Executing \"$it\"" } }
+            .map { exec(it) }
+            .map { getTrimmedBytes(partition, it) }
+            .map { TrimResult.Success(partition, it) }
+            .cast(TrimResult::class.java)
+            .onErrorReturn { TrimResult.Failure(partition, it) }
+            .doOnSuccess { Timber.v { "Finished. Result=\"$it\"" } }
 
         return createFstrimFile.andThen(trim)
     }
 
-    private fun trim(partition: Partition): Completable {
-        return Single.just("$fstrimPath -v ${partition.directory}")
-            .subscribeOn(Schedulers.io()) //TODO determine which Thread to use
-            .doOnSuccess { Timber.v { "Executing \"$it\"" } }
-            .map { exec(it) }
-            .doOnSuccess { Timber.v { "Finished. Result=\"$it\"" } }
-            .ignoreElement()
+    private fun getTrimmedBytes(partition: Partition, output: List<String>): Long {
+        if (output.size != 1) throw TrimException.UnexpectedOutput(output, partition)
+
+        /*
+        Example:
+        /: 52.9 GiB (56784101376 bytes) trimmed
+        */
+        val text = output.first()
+        try {
+            return text.substringAfter("(").substringBefore(" bytes) trimmed").toLong()
+        } catch (exception: Exception) {
+            throw TrimException.InvalidOutput(text, partition, exception)
+        }
     }
 
     private fun exec(cmd: String): List<String> {
@@ -108,4 +120,18 @@ internal class TrimmerImpl @Inject constructor(private val assetManager: AssetMa
     companion object {
         private const val fstrimFileName = "fstrim"
     }
+}
+
+
+sealed class TrimException(msg: String, partition: Partition) : RuntimeException(msg) {
+
+    class UnexpectedOutput(val output: List<String>, partition: Partition) : TrimException(
+        "Expected 1 line. Unexpected output \"${output.joinToString(separator = ",\n", prefix = "[", postfix = "]")}\"",
+        partition
+    )
+
+    class InvalidOutput(val output: String, partition: Partition, cause: Exception) : TrimException(
+        "Could not determine number of trimmed bytes in \"$output\": ${cause.message}",
+        partition
+    )
 }

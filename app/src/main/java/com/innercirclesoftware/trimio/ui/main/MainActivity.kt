@@ -1,48 +1,64 @@
 package com.innercirclesoftware.trimio.ui.main
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.CheckBox
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import butterknife.BindView
 import butterknife.OnClick
+import com.github.ajalt.timberkt.Timber
 import com.innercirclesoftware.trimio.R
 import com.innercirclesoftware.trimio.ui.base.BaseActivity
+import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 class MainActivity : BaseActivity() {
 
-    @BindView(R.id.cache)
-    lateinit var cache: CheckBox
-
-    @BindView(R.id.data)
-    lateinit var data: CheckBox
-
-    @BindView(R.id.system)
-    lateinit var system: CheckBox
-
-    @BindView(R.id.trim_btn)
-    lateinit var trim: Button
-
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by lazy {
+        ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
+    }
 
     override val layout: Int = R.layout.activity_main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
-        viewModel.getTrimStatus().observe(this, Observer {
-            trim.isEnabled = it is TrimStatus.Sleeping
+        observeViewModel()
+    }
 
-            when (it) {
-                is TrimStatus.Trimming -> Toast.makeText(this, "Trimming ${it.current}", Toast.LENGTH_LONG).show()
-                is TrimStatus.Sleeping -> Toast.makeText(this, "Not trimming", Toast.LENGTH_LONG).show()
-            }
+    private fun observeViewModel() {
+        observeCacheState()
+        observeDataState()
+        observeSystemState()
+        observeTrimState()
+    }
+
+    private fun observeCacheState() {
+        viewModel.cacheState.observe(this, Observer {
+            Timber.d { it.toString() }
+            Toast.makeText(this, "Cache: $it", Toast.LENGTH_SHORT).show()
+        })
+    }
+
+    private fun observeDataState() {
+        viewModel.dataState.observe(this, Observer {
+            Timber.d { it.toString() }
+            Toast.makeText(this, "Data: $it", Toast.LENGTH_SHORT).show()
+        })
+    }
+
+    private fun observeSystemState() {
+        viewModel.systemState.observe(this, Observer {
+            Timber.d { it.toString() }
+            Toast.makeText(this, "System: $it", Toast.LENGTH_SHORT).show()
+        })
+    }
+
+
+    private fun observeTrimState() {
+        viewModel.trimming.observe(this, Observer { trimming ->
+            trim_btn.isEnabled = trimming.not()
         })
     }
 
