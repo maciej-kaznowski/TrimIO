@@ -24,12 +24,19 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
+    <ProgressBar
+        android:id="@+id/cache_progress_bar"
+        style="@style/PartitionProgressBar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cache" />
+
     <TextView
         android:id="@+id/cache_summary"
         style="@style/PartitionTrimSummary"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cache"
-        tools:text="Trimmed 64.7GB" />
+        app:layout_constraintTop_toBottomOf="@id/cache_progress_bar"
+        tools:text="Trimmed 64.7GB"
+        tools:visibility="gone" />
 
     <View
         android:id="@+id/cache_divider"
@@ -44,11 +51,17 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cache_divider" />
 
+    <ProgressBar
+        android:id="@+id/data_progress_bar"
+        style="@style/PartitionProgressBar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/data" />
+
     <TextView
         android:id="@+id/data_summary"
         style="@style/PartitionTrimSummary"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/data"
+        app:layout_constraintTop_toBottomOf="@id/data_progress_bar"
         tools:text="Trimmed 64.7GB" />
 
     <View
@@ -64,11 +77,18 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/data_divider" />
 
+
+    <ProgressBar
+        android:id="@+id/system_progress_bar"
+        style="@style/PartitionProgressBar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/system" />
+
     <TextView
         android:id="@+id/system_summary"
         style="@style/PartitionTrimSummary"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/system"
+        app:layout_constraintTop_toBottomOf="@id/system_progress_bar"
         tools:text="Trimmed 64.7GB" />
 
     <com.google.android.material.button.MaterialButton

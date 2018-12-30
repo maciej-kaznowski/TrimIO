@@ -2,6 +2,8 @@ package com.innercirclesoftware.trimio.ui.main
 
 import android.os.Bundle
 import android.text.format.Formatter
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -37,39 +39,43 @@ class MainActivity : BaseActivity() {
 
     private fun observeCacheState() {
         viewModel.cacheState.observe(this, Observer {
-            onPartitionStateChanged(it, cache_summary)
+            onPartitionStateChanged(it, cache_summary, cache_progress_bar)
         })
     }
 
     private fun observeDataState() {
         viewModel.dataState.observe(this, Observer {
-            onPartitionStateChanged(it, data_summary)
+            onPartitionStateChanged(it, data_summary, data_progress_bar)
         })
     }
 
     private fun observeSystemState() {
         viewModel.systemState.observe(this, Observer {
-            onPartitionStateChanged(it, system_summary)
+            onPartitionStateChanged(it, system_summary, system_progress_bar)
         })
     }
 
-    private fun onPartitionStateChanged(it: TrimStatus, summary: TextView) {
-        when (it) {
+    private fun onPartitionStateChanged(status: TrimStatus, summary: TextView, progressBar: ProgressBar) {
+        when (status) {
             is TrimStatus.Completed -> {
-                summary.text = when (it.result) {
+                summary.text = when (status.result) {
                     is TrimResult.Success -> {
                         //TODO localize
-                        "Trimmed " + Formatter.formatShortFileSize(this, it.result.trimmedBytes)
+                        "Trimmed " + Formatter.formatShortFileSize(this, status.result.trimmedBytes)
                     }
-                    is TrimResult.Failure -> it.result.throwable.message
+                    is TrimResult.Failure -> status.result.throwable.message
                 }
+
+                progressBar.visibility = View.GONE
+                summary.visibility = View.VISIBLE
             }
             is TrimStatus.Trimming -> {
-                //TODO  show progress bar
-                summary.text = null
+                progressBar.visibility = View.VISIBLE
+                summary.visibility = View.GONE
             }
             is TrimStatus.Sleeping -> {
-                //TODO hide everything
+                progressBar.visibility = View.GONE
+                summary.visibility = View.GONE
             }
         }
     }
