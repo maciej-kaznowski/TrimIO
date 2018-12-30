@@ -22,4 +22,8 @@ class SettingsViewModel @Inject constructor(preferenceManager: PreferenceManager
         _frequency.value = Frequency.DAILY
         _partitions.value = listOf(Partition.Cache, Partition.Data, Partition.System)
     }
+
+    fun onFrequencySelected(frequency: Frequency) {
+        //TODO
+    }
 }

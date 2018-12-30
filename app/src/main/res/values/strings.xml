@@ -4,4 +4,19 @@
     <string name="settings_periodic_trim_header">Periodic Trim</string>
     <string name="settings_about_header">About</string>
     <string name="github_url">https://github.com/maciej-kaznowski/trimio</string>
+
+    <string name="frequency_never">Never</string>
+    <string name="frequency_daily">Daily</string>
+    <string name="frequency_weekly">Weekly</string>
+    <string name="frequency_fortnightly">Fortnightly</string>
+    <string name="frequency_monthly">Monthly</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="peridocic_trim_frequency_dialog_title">Trim Periodically</string>
+    <string-array name="periodic_trim_frequencies">
+        <item>@string/frequency_never</item>
+        <item>@string/frequency_daily</item>
+        <item>@string/frequency_weekly</item>
+        <item>@string/frequency_fortnightly</item>
+        <item>@string/frequency_monthly</item>
+    </string-array>
 </resources>

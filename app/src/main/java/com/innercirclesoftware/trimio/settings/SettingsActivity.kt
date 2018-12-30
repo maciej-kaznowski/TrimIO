@@ -9,6 +9,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import butterknife.OnClick
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.list.listItems
 import com.innercirclesoftware.trimio.R
 import com.innercirclesoftware.trimio.trim.periodic.Frequency
 import com.innercirclesoftware.trimio.ui.base.BaseActivity
@@ -79,5 +81,34 @@ class SettingsActivity : BaseActivity() {
         val githubUrl = getString(R.string.github_url)
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(githubUrl))
         startActivity(browserIntent)
+    }
+
+    @OnClick(R.id.frequency)
+    fun onFrequencyClicked() {
+        MaterialDialog(this).show {
+            title(
+                res = R.string.peridocic_trim_frequency_dialog_title
+            )
+            listItems(
+                res = R.array.periodic_trim_frequencies,
+                waitForPositiveButton = false,
+                selection = { dialog, index, _ ->
+                    val selectedFrequency = when (index) {
+                        0 -> Frequency.NEVER
+                        1 -> Frequency.DAILY
+                        2 -> Frequency.WEEKLY
+                        3 -> Frequency.FORTNIGHTLY
+                        4 -> Frequency.MONTHLY
+                        else -> throw IllegalArgumentException("Unexpected frequency index=$index")
+                    }
+
+                    viewModel.onFrequencySelected(selectedFrequency)
+                    dialog.dismiss()
+                }
+            )
+            negativeButton(
+                res = R.string.btn_cancel
+            )
+        }
     }
 }

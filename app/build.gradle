@@ -59,4 +59,8 @@ dependencies {
     def butterknife = '9.0.0-rc3'
     implementation "com.jakewharton:butterknife:$butterknife"
     kapt "com.jakewharton:butterknife-compiler:$butterknife"
+
+    //material dialogs
+    def material_dialogs = "2.0.0-rc5"
+    implementation "com.afollestad.material-dialogs:core:$material_dialogs"
 }
