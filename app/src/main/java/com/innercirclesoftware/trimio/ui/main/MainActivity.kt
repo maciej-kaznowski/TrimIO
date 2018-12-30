@@ -1,12 +1,14 @@
 package com.innercirclesoftware.trimio.ui.main
 
 import android.os.Bundle
-import android.widget.Toast
+import android.text.format.Formatter
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import butterknife.OnClick
 import com.innercirclesoftware.trimio.R
+import com.innercirclesoftware.trimio.trim.TrimResult
 import com.innercirclesoftware.trimio.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -35,22 +37,42 @@ class MainActivity : BaseActivity() {
 
     private fun observeCacheState() {
         viewModel.cacheState.observe(this, Observer {
-            Toast.makeText(this, "Cache: $it", Toast.LENGTH_SHORT).show()
+            onPartitionStateChanged(it, cache_summary)
         })
     }
 
     private fun observeDataState() {
         viewModel.dataState.observe(this, Observer {
-            Toast.makeText(this, "Data: $it", Toast.LENGTH_SHORT).show()
+            onPartitionStateChanged(it, data_summary)
         })
     }
 
     private fun observeSystemState() {
         viewModel.systemState.observe(this, Observer {
-            Toast.makeText(this, "System: $it", Toast.LENGTH_SHORT).show()
+            onPartitionStateChanged(it, system_summary)
         })
     }
 
+    private fun onPartitionStateChanged(it: TrimStatus, summary: TextView) {
+        when (it) {
+            is TrimStatus.Completed -> {
+                summary.text = when (it.result) {
+                    is TrimResult.Success -> {
+                        //TODO localize
+                        "Trimmed " + Formatter.formatShortFileSize(this, it.result.trimmedBytes)
+                    }
+                    is TrimResult.Failure -> it.result.throwable.message
+                }
+            }
+            is TrimStatus.Trimming -> {
+                //TODO  show progress bar
+                summary.text = null
+            }
+            is TrimStatus.Sleeping -> {
+                //TODO hide everything
+            }
+        }
+    }
 
     private fun observeTrimState() {
         viewModel.trimming.observe(this, Observer { trimming ->

@@ -1,11 +1,9 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="android:statusBarColor">@color/windowBackground</item>
         <item name="android:navigationBarColor">@color/windowBackground</item>
@@ -16,23 +14,32 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginTop">12dp</item>
         <!--12% black: 0.12 * 255 = 30.6 -> 31 (DEC) = 1F (HEX)-->
-        <item name="android:background">#1fffffff</item>
+        <item name="android:background">#1FFFFFFF</item>
     </style>
 
-    <style name="CheckBoxPartition">
+    <style name="SwitchPartition">
+        <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">56dp</item>
-        <item name="android:button">@null</item>
-        <item name="android:drawableRight">?android:attr/listChoiceIndicatorMultiple</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="ToolbarTextAppearance" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textAllCaps">true</item>
         <item name="android:typeface">monospace</item>
         <item name="android:letterSpacing">0.3</item>
+    </style>
+
+    <style name="PartitionTrimSummary">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">?colorPrimary</item>
     </style>
 
 </resources>
