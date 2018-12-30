@@ -1,8 +1,7 @@
-package com.innercirclesoftware.trimio.ui.main
+package com.innercirclesoftware.trimio.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.innercirclesoftware.trimio.trim.TrimModule
 import com.innercirclesoftware.trimio.ui.base.ActivityComponent
 import dagger.Component
 import dagger.Module
@@ -12,30 +11,28 @@ import javax.inject.Scope
 
 @Scope
 @Retention(AnnotationRetention.RUNTIME)
-annotation class PerMainActivity
+annotation class PerSettingsActivity
 
-@PerMainActivity
-@Component(
-    dependencies = [ActivityComponent::class],
-    modules = [MainActivityModule::class]
-)
-interface MainActivityComponent {
+@PerSettingsActivity
+@Component(dependencies = [ActivityComponent::class], modules = [SettingsActivityModule::class])
+interface SettingsActivityComponent {
 
-    fun inject(activity: MainActivity)
+    fun inject(activity: SettingsActivity)
 
 }
 
-@Module(includes = [TrimModule::class])
-class MainActivityModule(private val activity: MainActivity) {
+@Module(includes = [PreferenceModule::class])
+class SettingsActivityModule(activity: SettingsActivity) {
 
-    @PerMainActivity
+    @PerSettingsActivity
     @Provides
-    fun providesViewModelFactory(mainViewModelProvider: Provider<MainViewModel>): ViewModelProvider.Factory {
+    fun providesViewModelFactory(settingsViewModel: Provider<SettingsViewModel>): ViewModelProvider.Factory {
         return object : ViewModelProvider.Factory {
+
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
                 return when (modelClass) {
-                    MainViewModel::class.java -> mainViewModelProvider.get() as T
+                    SettingsViewModel::class.java -> settingsViewModel.get() as T
                     else -> throw IllegalArgumentException("Missing ViewModel provider for class=$modelClass")
                 }
             }

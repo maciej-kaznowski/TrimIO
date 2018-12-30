@@ -1,5 +1,6 @@
 package com.innercirclesoftware.trimio.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.format.Formatter
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import butterknife.OnClick
 import com.innercirclesoftware.trimio.R
+import com.innercirclesoftware.trimio.settings.SettingsActivity
 import com.innercirclesoftware.trimio.trim.TrimResult
 import com.innercirclesoftware.trimio.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -27,7 +29,19 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initToolbar()
         observeViewModel()
+    }
+
+    private fun initToolbar() {
+        toolbar.inflateMenu(R.menu.menu_main)
+        toolbar.setOnMenuItemClickListener {
+            if (it.itemId == R.id.menu_item_settings) {
+                Intent(this, SettingsActivity::class.java).also { startActivity(it) }
+                return@setOnMenuItemClickListener true
+            }
+            false
+        }
     }
 
     private fun observeViewModel() {
