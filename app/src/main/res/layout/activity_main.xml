@@ -6,36 +6,59 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainActivity">
 
-    <CheckBox
-        android:id="@+id/cache"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Cache"
+        android:layout_height="?actionBarSize"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/app_name"
+        app:titleTextAppearance="@style/ToolbarTextAppearance"
+        app:titleTextColor="@color/colorPrimary" />
 
     <CheckBox
-        android:id="@+id/data"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Data"
+        android:id="@+id/cache"
+        style="@style/CheckBoxPartition"
+        android:text="CACHE"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <View
+        style="@style/Divider"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cache" />
 
     <CheckBox
-        android:id="@+id/system"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="System"
+        android:id="@+id/data"
+        style="@style/CheckBoxPartition"
+        android:text="DATA"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cache" />
+
+    <View
+        style="@style/Divider"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/data" />
 
-    <Button
-        android:id="@+id/trim_btn"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Trim"
+    <CheckBox
+        android:id="@+id/system"
+        style="@style/CheckBoxPartition"
+        android:text="SYSTEM"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/system" />
+        app:layout_constraintTop_toBottomOf="@id/data" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/trim_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_marginBottom="16dp"
+        android:minWidth="200dp"
+        android:text="Trim"
+        android:textStyle="bold"
+        android:typeface="monospace"
+        app:cornerRadius="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
