@@ -6,7 +6,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import butterknife.OnClick
-import com.github.ajalt.timberkt.Timber
 import com.innercirclesoftware.trimio.R
 import com.innercirclesoftware.trimio.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -36,21 +35,18 @@ class MainActivity : BaseActivity() {
 
     private fun observeCacheState() {
         viewModel.cacheState.observe(this, Observer {
-            Timber.d { it.toString() }
             Toast.makeText(this, "Cache: $it", Toast.LENGTH_SHORT).show()
         })
     }
 
     private fun observeDataState() {
         viewModel.dataState.observe(this, Observer {
-            Timber.d { it.toString() }
             Toast.makeText(this, "Data: $it", Toast.LENGTH_SHORT).show()
         })
     }
 
     private fun observeSystemState() {
         viewModel.systemState.observe(this, Observer {
-            Timber.d { it.toString() }
             Toast.makeText(this, "System: $it", Toast.LENGTH_SHORT).show()
         })
     }
