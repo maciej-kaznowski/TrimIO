@@ -86,11 +86,11 @@ internal class TrimmerImpl @Inject constructor(private val assetManager: AssetMa
 
         /*
         Example:
-        /: 52.9 GiB (56784101376 bytes) trimmed
+        /cache: 0 bytes trimmed
         */
         val text = output.first()
         try {
-            return text.substringAfter("(").substringBefore(" bytes) trimmed").toLong()
+            return text.substringAfter("${partition.directory}: ").substringBefore(" bytes trimmed").toLong()
         } catch (exception: Exception) {
             throw TrimException.InvalidOutput(text, partition, exception)
         }
