@@ -1,5 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        app:titleTextAppearance="@style/ToolbarTextAppearance"
+        app:titleTextColor="@color/colorPrimary" />
+
+    <TextView
+        style="@style/SettingsHeader"
+        android:text="@string/settings_periodic_trim_header" />
+
+    <LinearLayout
+        android:id="@+id/frequency"
+        style="@style/SettingsListItem"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            style="@style/SettingsListItemTitle"
+            android:text="Frequency" />
+
+        <TextView
+            android:id="@+id/frequency_summary"
+            style="@style/SettingsListItemSubtitle"
+            tools:text="Weekly" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/partitions"
+        style="@style/SettingsListItem">
+
+        <TextView
+            style="@style/SettingsListItemTitle"
+            android:text="Partitions" />
+
+        <TextView
+            android:id="@+id/partitions_summary"
+            style="@style/SettingsListItemSubtitle"
+            tools:text="Cache, Data, System" />
+
+    </LinearLayout>
+
+    <TextView
+        style="@style/SettingsHeader"
+        android:text="@string/settings_about_header" />
+
+    <LinearLayout
+        android:id="@+id/github"
+        style="@style/SettingsListItem">
+
+        <TextView
+            style="@style/SettingsListItemTitle"
+            android:text="GitHub" />
+
+        <TextView
+            style="@style/SettingsListItemSubtitle"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/github_url" />
+
+    </LinearLayout>
+
+</LinearLayout>

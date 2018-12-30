@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">trimio</string>
     <string name="settings_activity_title">Settings</string>
+    <string name="settings_periodic_trim_header">Periodic Trim</string>
+    <string name="settings_about_header">About</string>
+    <string name="github_url">https://github.com/maciej-kaznowski/trimio</string>
 </resources>
