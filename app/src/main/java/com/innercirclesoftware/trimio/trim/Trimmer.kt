@@ -20,10 +20,10 @@ interface Trimmer {
 
 }
 
-sealed class TrimResult(val partition: Partition) {
+sealed class TrimResult(open val partition: Partition) {
 
-    class Success(partition: Partition, val trimmedBytes: Long) : TrimResult(partition)
-    class Failure(partition: Partition, val throwable: Throwable) : TrimResult(partition)
+    data class Success(override val partition: Partition, val trimmedBytes: Long) : TrimResult(partition)
+    data class Failure(override val partition: Partition, val throwable: Throwable) : TrimResult(partition)
 
 }
 
