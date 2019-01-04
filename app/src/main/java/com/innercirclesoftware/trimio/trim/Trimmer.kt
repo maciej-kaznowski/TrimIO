@@ -36,6 +36,14 @@ internal class TrimmerImpl @Inject constructor(private val assetManager: AssetMa
         Completable.fromAction { copyFstrimAsset() }.andThen(makeFstrimFileExecutable).cache()
     }
 
+    private val checkSuAvailable: Completable by lazy {
+        Completable.fromAction {
+            if (!Shell.SU.available()) {
+                throw SuNotAvailableException("SuperUser is not available")
+            }
+        }
+    }
+
     private val makeFstrimFileExecutable: Completable by lazy {
         Completable.fromAction {
             val chmodCmd = "chmod +x $fstrimPath"
@@ -78,7 +86,10 @@ internal class TrimmerImpl @Inject constructor(private val assetManager: AssetMa
             .onErrorReturn { TrimResult.Failure(partition, it) }
             .doOnSuccess { Timber.v { "Finished. Result=\"$it\"" } }
 
-        return createFstrimFile.andThen(trim)
+        return checkSuAvailable
+            .andThen(createFstrimFile)
+            .andThen(trim)
+            .onErrorReturn { TrimResult.Failure(partition, it) }
     }
 
     private fun getTrimmedBytes(partition: Partition, output: List<String>): Long {
@@ -135,3 +146,5 @@ sealed class TrimException(msg: String, partition: Partition) : RuntimeException
         partition
     )
 }
+
+class SuNotAvailableException(msg: String) : RuntimeException(msg)
