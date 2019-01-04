@@ -44,6 +44,7 @@ class SettingsActivity : BaseActivity() {
             ContextCompat.getColor(this, R.color.colorPrimary),
             PorterDuff.Mode.SRC_ATOP
         )
+        toolbar.setNavigationOnClickListener { supportFinishAfterTransition() }
     }
 
     private fun observeViewModel() {
