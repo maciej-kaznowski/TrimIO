@@ -53,8 +53,14 @@ internal class TrimmerImpl @Inject constructor(private val assetManager: AssetMa
     }
 
     private fun copyFstrimAsset() {
+        val fstrimFile = File(fstrimPath)
+        if (fstrimFile.exists()) {
+            Timber.v { "fstrim file already exists, not copying from APK assets" }
+            return
+        }
+
         Timber.v { "Copying fstrim from APK assets to file=\'$fstrimPath\'" }
-        val fileCreated = File(fstrimPath).createNewFile()
+        val fileCreated = fstrimFile.createNewFile()
         Timber.v { "fstrimPath=$fstrimPath created=$fileCreated" }
 
         val output: OutputStream = FileOutputStream(fstrimPath)
