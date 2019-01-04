@@ -41,7 +41,15 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    //rxjava
     implementation "io.reactivex.rxjava2:rxjava:2.2.4"
+
+    //rxkotlin
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
+
+    //rxpreferences
+    implementation 'com.f2prateek.rx.preferences2:rx-preferences:2.0.0'
 
     //timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
@@ -63,4 +71,10 @@ dependencies {
     //material dialogs
     def material_dialogs = "2.0.0-rc5"
     implementation "com.afollestad.material-dialogs:core:$material_dialogs"
+
+    //work manager
+    def work_version = "1.0.0-beta01"
+    implementation "android.arch.work:work-runtime-ktx:$work_version"
+    implementation "android.arch.work:work-rxjava2:$work_version"
+
 }

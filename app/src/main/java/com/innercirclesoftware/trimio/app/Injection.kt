@@ -15,7 +15,8 @@ annotation class PerApp
 @PerApp
 @Component(
     modules = [
-        AppModule::class
+        AppModule::class,
+        WorkModule::class
     ]
 )
 interface AppComponent {
