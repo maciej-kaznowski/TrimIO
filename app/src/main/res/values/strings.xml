@@ -11,7 +11,7 @@
     <string name="frequency_fortnightly">Fortnightly</string>
     <string name="frequency_monthly">Monthly</string>
     <string name="btn_cancel">Cancel</string>
-    <string name="peridocic_trim_frequency_dialog_title">Trim Periodically</string>
+    <string name="periodic_trim_frequency_dialog_title">Trim Periodically</string>
     <string-array name="periodic_trim_frequencies">
         <item>@string/frequency_never</item>
         <item>@string/frequency_daily</item>
@@ -19,4 +19,6 @@
         <item>@string/frequency_fortnightly</item>
         <item>@string/frequency_monthly</item>
     </string-array>
+    <string name="periodic_trim_partitions_dialog_title">Partitions</string>
+    <string name="btn_select">Select</string>
 </resources>

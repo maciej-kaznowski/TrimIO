@@ -2,6 +2,7 @@ package com.innercirclesoftware.trimio.ui.base
 
 import android.content.Context
 import android.content.res.AssetManager
+import com.innercirclesoftware.trimio.trim.periodic.TrimScheduler
 import dagger.Module
 import dagger.Subcomponent
 import javax.inject.Scope
@@ -20,6 +21,8 @@ class ActivityModule(activity: BaseActivity)
     ]
 )
 interface ActivityComponent {
+
+    fun getTrimScheduler(): TrimScheduler
 
     fun getContext(): Context
 

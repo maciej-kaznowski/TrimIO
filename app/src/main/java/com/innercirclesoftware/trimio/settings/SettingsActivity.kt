@@ -11,8 +11,11 @@ import androidx.lifecycle.ViewModelProviders
 import butterknife.OnClick
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.list.listItems
+import com.afollestad.materialdialogs.list.listItemsMultiChoice
 import com.innercirclesoftware.trimio.R
+import com.innercirclesoftware.trimio.trim.Partition
 import com.innercirclesoftware.trimio.trim.periodic.Frequency
+import com.innercirclesoftware.trimio.trim.toPartition
 import com.innercirclesoftware.trimio.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_settings.*
 import javax.inject.Inject
@@ -87,7 +90,7 @@ class SettingsActivity : BaseActivity() {
     fun onFrequencyClicked() {
         MaterialDialog(this).show {
             title(
-                res = R.string.peridocic_trim_frequency_dialog_title
+                res = R.string.periodic_trim_frequency_dialog_title
             )
             listItems(
                 res = R.array.periodic_trim_frequencies,
@@ -108,6 +111,32 @@ class SettingsActivity : BaseActivity() {
             )
             negativeButton(
                 res = R.string.btn_cancel
+            )
+        }
+    }
+
+    @OnClick(R.id.partitions)
+    fun onPartitionsClicked() {
+        MaterialDialog(this).show {
+            title(
+                res = R.string.periodic_trim_partitions_dialog_title
+            )
+            listItemsMultiChoice(
+                items = listOf(Partition.Data, Partition.Cache, Partition.System).map { it.directory },
+                waitForPositiveButton = true,
+                allowEmptySelection = false,
+                selection = { dialog: MaterialDialog, _: IntArray, items: List<String> ->
+                    val partitions = items.map { it.toPartition()!! }
+
+                    viewModel.onPartitionsSelected(partitions)
+                    dialog.dismiss()
+                }
+            )
+            negativeButton(
+                res = R.string.btn_cancel
+            )
+            positiveButton(
+                res = R.string.btn_select
             )
         }
     }
