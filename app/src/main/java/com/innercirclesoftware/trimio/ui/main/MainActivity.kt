@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.transition.TransitionManager
 import butterknife.OnClick
 import com.innercirclesoftware.trimio.R
 import com.innercirclesoftware.trimio.settings.SettingsActivity
@@ -70,6 +71,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun onPartitionStateChanged(status: TrimStatus, summary: TextView, progressBar: ProgressBar) {
+        TransitionManager.beginDelayedTransition(constraintLayout)
         when (status) {
             is TrimStatus.Completed -> {
                 summary.text = when (status.result) {
