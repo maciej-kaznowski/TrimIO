@@ -39,7 +39,7 @@ internal class TrimmerImpl @Inject constructor(private val assetManager: AssetMa
     private val checkSuAvailable: Completable by lazy {
         Completable.fromAction {
             if (!Shell.SU.available()) {
-                throw SuNotAvailableException("SuperUser is not available")
+                throw SuNotAvailableException()
             }
         }
     }
@@ -153,4 +153,4 @@ sealed class TrimException(msg: String, partition: Partition) : RuntimeException
     )
 }
 
-class SuNotAvailableException(msg: String) : RuntimeException(msg)
+class SuNotAvailableException : RuntimeException("SuperUser is not available")
