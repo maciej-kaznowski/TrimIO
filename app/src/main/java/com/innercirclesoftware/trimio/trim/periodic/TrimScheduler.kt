@@ -50,19 +50,21 @@ class TrimSchedulerImpl @Inject constructor(
     }
 
     private fun schedule(workRequest: PeriodicWorkRequest): Completable {
-        return Completable.fromAction {
-            Timber.i { "Scheduling trim work" }
-            //TODO wait until it's finished cancelling
-            workManager.get().enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.REPLACE, workRequest)
-        }
+        return Completable
+            .fromFuture(
+                workManager.get().enqueueUniquePeriodicWork(
+                    WORK_NAME,
+                    ExistingPeriodicWorkPolicy.REPLACE,
+                    workRequest
+                ).result
+            )
+            .doOnSubscribe { Timber.i { "Scheduling trim work" } }
     }
 
     private fun unSchedule(): Completable {
-        return Completable.fromAction {
-            Timber.i { "UnScheduling trim work" }
-            //TODO wait until it's finished cancelling
-            workManager.get().cancelUniqueWork(WORK_NAME)
-        }
+        return Completable
+            .fromFuture(workManager.get().cancelUniqueWork(WORK_NAME).result)
+            .doOnSubscribe { Timber.i { "UnScheduling trim work" } }
     }
 
     companion object {
