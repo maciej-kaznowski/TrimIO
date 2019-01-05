@@ -55,14 +55,15 @@ class SettingsActivity : BaseActivity() {
     private fun observeFrequency() {
         viewModel.frequency.observe(this, Observer { it ->
             partitions.isEnabled = it != Frequency.NEVER
-            frequency_summary.text = when (it!!) {
-                //TODO localize
-                Frequency.NEVER -> "Never"
-                Frequency.DAILY -> "Daily"
-                Frequency.WEEKLY -> "Weekly"
-                Frequency.FORTNIGHTLY -> "Fortnightly"
-                Frequency.MONTHLY -> "Monthly"
-            }
+            frequency_summary.text = getString(
+                when (it!!) {
+                    Frequency.NEVER -> R.string.frequency_never
+                    Frequency.DAILY -> R.string.frequency_daily
+                    Frequency.WEEKLY -> R.string.frequency_weekly
+                    Frequency.FORTNIGHTLY -> R.string.frequency_fortnightly
+                    Frequency.MONTHLY -> R.string.frequency_monthly
+                }
+            )
         })
     }
 

@@ -75,10 +75,7 @@ class MainActivity : BaseActivity() {
         when (status) {
             is TrimStatus.Completed -> {
                 summary.text = when (status.result) {
-                    is TrimResult.Success -> {
-                        //TODO localize
-                        "Trimmed " + Formatter.formatShortFileSize(this, status.result.trimmedBytes)
-                    }
+                    is TrimResult.Success -> getString(R.string.main_trim_successful, Formatter.formatShortFileSize(this, status.result.trimmedBytes))
                     is TrimResult.Failure -> status.result.throwable.message
                 }
 

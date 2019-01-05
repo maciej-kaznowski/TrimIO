@@ -122,27 +122,68 @@ class TrimWork constructor(
             val hasSucceeded = any { it is TrimResult.Success }
 
             return when {
-                //TODO localize
-                hasFailed && hasSucceeded -> "Failed to trim some partitions"
-                hasFailed -> "Failed to trim all partitions"
+                hasFailed && hasSucceeded -> applicationContext.getString(R.string.periodic_trim_notif_title_partial)
+                hasFailed -> applicationContext.getString(R.string.periodic_trim_notif_title_fail)
                 else -> {
-                    val totalTrimmed = filterIsInstance(TrimResult.Success::class.java).sumByLong { it.trimmedBytes }
-                    "Successfully trimmed all partitions: ${Formatter.formatShortFileSize(
-                        applicationContext,
-                        totalTrimmed
-                    )} trimmed"
+                    val totalTrimmed = filterIsInstance(TrimResult.Success::class.java)
+                        .sumByLong { it.trimmedBytes }
+                        .let { Formatter.formatShortFileSize(applicationContext, it) }
+
+                    applicationContext.getString(R.string.periodic_trim_notif_title_success, totalTrimmed)
                 }
             }
         }
 
     private val TrimResult.contentTitle: CharSequence
         get() = when (this) {
-            //TODO localize
             is TrimResult.Success -> {
                 val amount = Formatter.formatShortFileSize(applicationContext, trimmedBytes)
-                "Trimmed $amount in ${partition.directory}"
+                applicationContext.getString(
+                    R.string.periodic_trim_notif_result_title_success,
+                    amount,
+                    partition.directory
+                )
             }
-            is TrimResult.Failure -> "Failed to trim ${partition.directory}"
+            is TrimResult.Failure -> applicationContext.getString(
+                R.string.periodic_trim_notif_result_title_fail,
+                partition.directory
+            )
+        }
+
+
+    private val List<TrimResult>.contentText: CharSequence
+        get() {
+            val hasFailed = any { it is TrimResult.Failure }
+            val hasSucceeded = any { it is TrimResult.Success }
+
+            return when {
+                hasFailed && hasSucceeded -> {
+                    val failedPartitions = filter { it is TrimResult.Failure }
+                        .joinToString(separator = ", ") { it.partition.directory }
+
+                    val successfulPartitions = filter { it is TrimResult.Success }
+                        .joinToString(separator = ", ") { it.partition.directory }
+
+                    applicationContext.getString(
+                        R.string.periodic_trim_notif_content_partial,
+                        failedPartitions,
+                        successfulPartitions
+                    )
+                }
+                hasFailed -> {
+                    val partitions = joinToString(separator = ", ") { it.partition.directory }
+
+                    applicationContext.getString(R.string.periodic_trim_notif_content_fail, partitions)
+                }
+                else -> {
+                    val partitions = joinToString(separator = ", ") { it.partition.directory }
+
+                    applicationContext.getString(
+                        R.string.periodic_trim_notif_content_success,
+                        partitions
+                    )
+                }
+            }
         }
 
     companion object {
@@ -162,21 +203,3 @@ private inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
     }
     return sum
 }
-
-private val List<TrimResult>.contentText: CharSequence
-    get() {
-        val hasFailed = any { it is TrimResult.Failure }
-        val hasSucceeded = any { it is TrimResult.Success }
-
-        return when {
-            //TODO localize
-            hasFailed && hasSucceeded -> {
-                val failedPartitions = filter { it is TrimResult.Failure }.map { it.partition.directory }
-                val successfulPartitions = filter { it is TrimResult.Success }.map { it.partition.directory }
-                return "Failed to trim ${failedPartitions.joinToString(separator = ", ")}\n" +
-                        "Successfully trimmed ${successfulPartitions.joinToString(separator = ", ")}"
-            }
-            hasFailed -> "Failed to trim ${joinToString(separator = ", ") { it.partition.directory }}"
-            else -> "Successfully trimmed ${joinToString(separator = ", ") { it.partition.directory }}"
-        }
-    }

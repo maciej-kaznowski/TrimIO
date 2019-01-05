@@ -21,4 +21,17 @@
     </string-array>
     <string name="periodic_trim_partitions_dialog_title">Partitions</string>
     <string name="btn_select">Select</string>
+    <string name="main_trim_successful">Trimmed %s</string>
+
+    <string name="periodic_trim_notif_title_partial">Failed to trim some partitions</string>
+    <string name="periodic_trim_notif_content_partial">Failed to trim %1$s\nSuccessfully trimmed %2$s</string>
+
+    <string name="periodic_trim_notif_title_success">Successfully trimmed all partitions: %s trimmed</string>
+    <string name="periodic_trim_notif_content_success">Successfully trimmed %s</string>
+
+    <string name="periodic_trim_notif_title_fail">Failed to trim all partitions</string>
+    <string name="periodic_trim_notif_content_fail">Failed to trim %s</string>
+
+    <string name="periodic_trim_notif_result_title_success">Trimmed %1$s in %2$s</string>
+    <string name="periodic_trim_notif_result_title_fail">Failed to trim %s</string>
 </resources>
